@@ -13,7 +13,6 @@
     ],
     "background_scripts": [
         "js/jquery.js",
-        "js/audio.js",
         "js/soundmanager.js",
         "js/back.js"
     ],

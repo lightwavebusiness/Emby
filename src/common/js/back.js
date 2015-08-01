@@ -10,6 +10,8 @@ function play() {
     if (kango.storage.getItem('currentSong')) {
         song = soundManager.getSoundById(kango.storage.getItem('currentSong'));
         song.play();
+        kango.storage.setItem('playing', true);
+        kango.dispatchMessage('updateControlButton');
     }
 }
 
@@ -17,23 +19,32 @@ function pause() {
     if (kango.storage.getItem('currentSong')) {
         song = soundManager.getSoundById(kango.storage.getItem('currentSong'));
         song.pause();
+        kango.storage.setItem('playing', false);
+        kango.dispatchMessage('updateControlButton');
     }
 }
 
 function destroy() {
+    kango.storage.setItem('playing', false);
     if (kango.storage.getItem('currentSong')) {
-        song = soundManager.getSoundById(kango.storage.getItem('currentSong'));
-        song.destruct();
+        try {
+            song = soundManager.getSoundById(kango.storage.getItem('currentSong'));
+            song.destruct();
+            kango.storage.getItem('currentSongInfo', {});
+            kango.dispatchMessage('updateControlButton');
+        } catch (e) {
+
+        }
     }
 }
 
 function clear() {
+    destroy();
+    kango.storage.setItem('currentSong', '');
     kango.storage.setItem('songs', []);
     kango.storage.setItem('currentsongindex', 0);
-    kango.storage.setItem('currentSong', '');
     kango.storage.setItem('currentSongInfo', {});
     kango.storage.setItem('songs', []);
-    destroy();
 }
 
 clear();
@@ -48,46 +59,18 @@ function checkSong(song) {
     return false;
 }
 
-function previousSong() {
-    destroy();
-
-    current = kango.storage.getItem('currentsongindex');
-    if (current > 0) {
-        kango.storage.setItem('currentsongindex', kango.storage.getItem('currentsongindex') - 1);
-        beginSong(songs[kango.storage.getItem('currentsongindex')]);
-    }
-}
-
-function nextSong() {
-    destroy();
-
-    current = kango.storage.getItem('currentsongindex');
-    if (current < kango.storage.getItem('songs').length - 1) {
-        kango.storage.setItem('currentsongindex', kango.storage.getItem('currentsongindex') + 1);
-        startSong(songs[kango.storage.getItem('currentsongindex')]);
-    } else {
-        kango.storage.setItem('songs', []);
-        kango.dispatchMessage('fini');
-    }
-}
-
 function startSong(song, callback) {
-
-    url = 'http://pleer.com/browser-extension/files/5515224KUy2.mp3'
     name = song.name;
     artist = song.artist;
     source = song.source;
 
     if (source == 'lastfm') {
-        url = "http://www.emby.io/geturl?query=" + name + " " + song.artist + "&source=" + source;
+        url = "http://www.emby.io/geturl?query=" + song.artist + " " + name + "&source=" + source;
     } else {
         url = "http://www.emby.io/geturl?query=" + song.id + "&source=" + source;
     }
 
-    console.log(url);
-
     kango.storage.setItem('currentSongInfo', song);
-    kango.dispatchMessage('renderSong', song);
 
     $.ajax({
         url: url
@@ -96,14 +79,14 @@ function startSong(song, callback) {
 
         var music = soundManager.createSound({
             url: url,
-            onload: function() {
+            autoLoad: true,
+            autoPlay: true,
+            onplay: function() {
                 callback(this.id);
             },
             onerror: function() {
                 nextSong();
             },
-            autoLoad: true,
-            autoPlay: true,
             onfinish: function() {
                 kango.dispatchMessage('fini');
                 nextSong();
@@ -114,16 +97,56 @@ function startSong(song, callback) {
 
 function beginSong(song) {
     startSong(song, function(id) {
+        console.log("RUNNING CALLBACK");
         destroy();
-        console.log("DATA: ", id);
+        kango.storage.setItem('playing', true);
+        kango.dispatchMessage('updateControlButton');
         kango.storage.setItem('currentSong', id);
-        console.log("DATA: ", kango.storage.getItem('currentSong'));
-        kango.storage.setItem('currentSong', id);
+        if (song.source == 'lastfm') {
+            try {
+                url = 'http://www.emby.io/getimage?query=' + song.name + " " + song.artist;
+                console.log(url);
+                $.ajax({
+                    url: url,
+                    success: function(data) {
+                        song = kango.storage.getItem('currentSongInfo');
+                        song.image = data;
+                        kango.storage.setItem('currentSongInfo', song);
+                        kango.dispatchMessage('renderSong', song);
+                    },
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        } else {
+            kango.dispatchMessage('renderSong', song);
+        }
     });
 }
 
-$('document').ready(function() {
+function previousSong() {
+    current = kango.storage.getItem('currentsongindex');
+    if (current > 0) {
+        kango.storage.setItem('currentsongindex', kango.storage.getItem('currentsongindex') - 1);
+        beginSong(songs[kango.storage.getItem('currentsongindex')]);
+    } else {
+        clear();
+        kango.dispatchMessage('fini');
+    }
+}
 
+function nextSong() {
+    current = kango.storage.getItem('currentsongindex');
+    if (current < kango.storage.getItem('songs').length - 1) {
+        kango.storage.setItem('currentsongindex', kango.storage.getItem('currentsongindex') + 1);
+        beginSong(songs[kango.storage.getItem('currentsongindex')]);
+    } else {
+        clear();
+        kango.dispatchMessage('fini');
+    }
+}
+
+$('document').ready(function() {
     kango.addMessageListener('addsong', function(event) {
         song = event.data[0];
         start = event.data[1];

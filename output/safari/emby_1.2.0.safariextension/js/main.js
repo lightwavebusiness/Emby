@@ -12,37 +12,28 @@ KangoAPI.onReady(function() {
         $('.control-song, .forwards, .backwards').removeClass('active');
     }
 
+    function updateControlButton() {
+        if (kango.storage.getItem('playing')) {
+            $('.control-song').text('pause');
+        } else {
+            $('.control-song').text('play_arrow');
+        }
+    }
+
     function renderSong() {
         song = kango.storage.getItem('currentSongInfo');
-        console.log(song);
+        updateControlButton();
         if (song.name) {
             $('.control-song, .forwards, .backwards').addClass('active');
             $('.song-title').text(song.name);
+            $('.song-image').attr('src', song.image);
             $('.song-artist').text(song.artist);
-
-            try {
-                if (song.source != 'soundcloud') {
-                    url = 'http://www.emby.io/getimage?query=' + song.name + " " + song.artist;
-                    console.log(url);
-                    $.ajax({
-                        url: url,
-                        success: function(data) {
-                            console.log(data);
-                            $('.song-image').attr('src', data);
-                        },
-                        error: function(xhr, testStatus, error) {
-                            $('.song-image').attr('src', song.image);
-                        }
-                    });
-                } else {
-                    $('.song-image').attr('src', song.image);
-                }
-            } catch (e) {
-                $('.song-image').attr('src', '');
-                console.log(e);
-            }
         }
     }
+
+    kango.addMessageListener('updateControlButton', function(event) {
+        updateControlButton();
+    });
 
     kango.addMessageListener('renderSong', function(event) {
         renderSong();
@@ -73,8 +64,9 @@ KangoAPI.onReady(function() {
 
         for (i = 0; i < names.length; i++) {
             $('.playlists').append('<li>' +
-                '<div class="collapsible-header playlist-header">' + playlists[names[i]].name +
-                '<a class="btn-floating waves-effect waves-light action grey delete-album" id="delete-' + names[i] + '"><i class="material-icons action-text">not_interested</i></a>' + '</div>' +
+                '<div class="collapsible-header playlist-header" id="body-' + names[i] + '">' + playlists[names[i]].name +
+                '<a class="btn-floating waves-effect waves-light action grey control-playlist" id="delete-' + names[i] + '"><i class="material-icons action-text">not_interested</i></a>' +
+                '<a class="btn-floating waves-effect waves-light action grey control-playlist" style="right: 40px;" id="play-' + names[i] + '"><i class="material-icons action-text">play_arrow</i></a>' + '</div>' +
                 '<div class="collapsible-body">' +
                 '<ul class="collection" id="' + names[i] + '">' +
                 '</ul>' +
@@ -123,13 +115,10 @@ KangoAPI.onReady(function() {
     }
 
     function addItem(id, picture, title, subtitle, source, identifier, add, album) {
-
         if (title && picture) {
-
             if (title.length > 40) {
                 return;
             }
-
             item = '<li class="' + source + ' item" id="' + identifier + '">' +
                 '<div class="collection-item avatar collapsible-header">' +
                 '<img class="image" id="picture-' + identifier + '" src="' + picture + '" />' +
@@ -143,7 +132,7 @@ KangoAPI.onReady(function() {
                 item += '<a class="btn-floating waves-effect waves-light action grey search-this" id="search-' + identifier + '"><i class="material-icons action-text">search</i></a></div>';
             }
 
-            item += '<div id="body-' + identifier + '" class="collapsible-body">';
+            item += '<div id="body-' + identifier + '" class="collapsible-body" style="border: none !important;">';
             item += '</div>';
             item += '</li>';
 
@@ -157,7 +146,7 @@ KangoAPI.onReady(function() {
                         data = eval(data);
                         body_data = '<ul class="collection">';
                         for (i = 0; i < data.length; i++) {
-                            add_identifier = CryptoJS.MD5(data[i] + subtitle).words[0];
+                            add_identifier = CryptoJS.MD5(data[i] + subtitle + "album-song").words[0];
                             add_identifier = Math.abs(add_identifier);
                             body_data += '<li class="album-song collection-item" id="albumsong-' + add_identifier + '">' + data[i] +
                                 '<a class="btn-floating waves-effect waves-light action grey album-add search-this album-song" id="search-' + add_identifier + '"><i class="material-icons action-text">search</i></a></div>' +
@@ -186,78 +175,36 @@ KangoAPI.onReady(function() {
         }
     }
 
-    function search(hit_query) {
-        if (page != 'search') {
-            search_timer = setInterval(function() {
-
-                if (typing === true) {
-
-                    query = $('#music-search').val();
-
-                    if (query.length > 0) {
-                        kango.storage.setItem('query', $('#music-search').val());
-                        $.ajax({
-                            url: "http://www.emby.io/search?query=" + query + "&autocomplete=t"
-                        }).then(function(data) {
-
-                            $('.data').html('');
-                            $('.spinner').hide();
-
-                            addData(data.lastfm.track, 'track', "image", "name", "artist", "lastfm", true);
-                            addData(data.lastfm.album, 'album', "image", "name", "artist", "lastfm", true, true);
-                            addData(data.lastfm.artist, 'artist', "image", "name", "", "lastfm", false);
-                            addData(data.soundcloud.tracks, 'song', "image", "title", "user", "soundcloud", true);
-                            addData(data.soundcloud.users, 'user', "image", "user", "", "soundcloud", false);
-                        });
-                    } else {
-                        $('.data').html('');
-                        $('.collection').hide();
-                        $('.spinner').show();
-                    }
-
-                }
-                typing = false;
-            }, 1000);
-        }
-    }
-
     function addData(items, name, picture, item_title, item_subtitle, source, add, album) {
         if (items.length > 0) {
-
             for (i = 0; i < items.length; i++) {
-
                 try {
-
                     title = items[i][item_title];
-
                     if (title) {
                         $('#' + name + '-list').show();
                     }
-
                     subtitle = items[i][item_subtitle];
-
                     if (!subtitle) {
                         subtitle = '';
                     }
-
                     if (picture in items[i]) {
                         image = items[i][picture];
                     }
-
                     if ("id" in items[i]) {
                         identifier = items[i].id;
                     } else {
-                        identifier = CryptoJS.MD5(title + subtitle).words[0];
+                        if (album) {
+                            identifier = CryptoJS.MD5(title + subtitle + "album").words[0];
+                        } else {
+                            identifier = CryptoJS.MD5(title + subtitle).words[0];
+                        }
                         identifier = Math.abs(identifier);
                     }
-
                     if (album) {
                         addItem(name + '-results', image, title, subtitle, source, identifier, add, true);
                     } else {
                         addItem(name + '-results', image, title, subtitle, source, identifier, add);
                     }
-
-
                 } catch (err) {
                     console.log(err);
                 }
@@ -293,6 +240,41 @@ KangoAPI.onReady(function() {
 
         } else {
             $('#' + name + '-list').hide();
+        }
+    }
+
+    function search(hit_query) {
+        if (page != 'search') {
+            search_timer = setInterval(function() {
+
+                if (typing === true) {
+
+                    query = $('#music-search').val();
+
+                    if (query.length > 0) {
+                        kango.storage.setItem('query', $('#music-search').val());
+                        $.ajax({
+                            url: "http://www.emby.io/search?query=" + query + "&autocomplete=t"
+                        }).then(function(data) {
+
+                            $('.data').html('');
+                            $('.spinner').hide();
+
+                            addData(data.lastfm.track, 'track', "image", "name", "artist", "lastfm", true);
+                            addData(data.lastfm.album, 'album', "image", "name", "artist", "lastfm", true, true);
+                            addData(data.lastfm.artist, 'artist', "image", "name", "", "lastfm", false);
+                            addData(data.soundcloud.tracks, 'song', "image", "title", "user", "soundcloud", true);
+                            addData(data.soundcloud.users, 'user', "image", "user", "", "soundcloud", false);
+                        });
+                    } else {
+                        $('.data').html('');
+                        $('.collection').hide();
+                        $('.spinner').show();
+                    }
+
+                }
+                typing = false;
+            }, 1000);
         }
     }
 
@@ -343,18 +325,13 @@ KangoAPI.onReady(function() {
     function playlist_page() {
         $("#base").load("../pages/playlist.html", function() {
             clearInterval(search_timer);
-
             $('.collapsible').collapsible({
                 accordion: false
             });
-
             $('.add-modal-trigger').leanModal();
-
             $('.add-playlist').attr("disabled", true);
-
             $('.add-playlist-confirm').click(function(event) {
                 event.preventDefault();
-
                 name = $('#playlist-name').val();
                 if (name.length > 0) {
                     identifier = CryptoJS.MD5(name).words[0];
@@ -452,7 +429,9 @@ KangoAPI.onReady(function() {
             }
 
             $('.add-song-to-playlist.collection').show();
-            $('#add-song-to-playlist').openModal();
+            if (Object.keys(kango.storage.getItem('playlists')).length > 0) {
+                $('#add-song-to-playlist').openModal();
+            }
         });
 
         $('body').on('click', '.add-song-playlist-btn', function() {
@@ -555,8 +534,6 @@ KangoAPI.onReady(function() {
                 image = $(selector + ' .image').attr('src');
                 artist = $('#' + id + ' .subtitle').text();
                 source = $("#" + id).attr('class').split(" ")[0];
-                console.log(artist);
-
                 $(selector).children('li').each(function() {
                     kango.dispatchMessage('addsong', [{
                         'id': $(this).attr('id').split('-')[1],
@@ -570,14 +547,15 @@ KangoAPI.onReady(function() {
             kango.dispatchMessage('playplaylist');
         });
 
+        updateControlButton();
+
         $('.control-song').click(function() {
             if ($('.control-song').hasClass('active')) {
-                if ($('.control-song').text() == 'play_arrow') {
-                    $('.control-song').text('pause');
-                    kango.dispatchMessage('playsong');
+                if (kango.storage.getItem('playing')) {
+                    kango.dispatchMessage('pausesong');
                 } else {
                     $('.control-song').text('play_arrow');
-                    kango.dispatchMessage('pausesong');
+                    kango.dispatchMessage('playsong');
                 }
             }
         });

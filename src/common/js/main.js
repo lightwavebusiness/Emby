@@ -47,7 +47,7 @@ KangoAPI.onReady(function() {
         track = playlists[location].tracks[a];
 
         $('#' + location).append(
-            '<li class="collection-item playlist-song avatar" id="' + track.id + '"><ul><img src="' + track.image + '" alt="" class="image">' +
+            '<li class="' + track.source + ' collection-item playlist-song avatar" id="' + track.id + '"><ul><img src="' + track.image + '" alt="" class="image">' +
             '<span class="title">' + track.name + '</span>' +
             '<span class="subtitle">' + track.artist + '</span>' +
             '<a class="btn-floating waves-effect waves-light action grey delete-song-playlist" id="' + 'playlist-' + location + '-id-' + track.id + '"><i class="material-icons action-text">not_interested</i></a>' +
@@ -66,7 +66,7 @@ KangoAPI.onReady(function() {
             $('.playlists').append('<li>' +
                 '<div class="collapsible-header playlist-header" id="body-' + names[i] + '">' + playlists[names[i]].name +
                 '<a class="btn-floating waves-effect waves-light action grey control-playlist" id="delete-' + names[i] + '"><i class="material-icons action-text">not_interested</i></a>' +
-                '<a class="btn-floating waves-effect waves-light action grey control-playlist" style="right: 40px;" id="play-' + names[i] + '"><i class="material-icons action-text">play_arrow</i></a>' + '</div>' +
+                '<a class="btn-floating waves-effect waves-light action grey control-playlist play-playlist" style="right: 40px;" id="play-' + names[i] + '"><i class="material-icons action-text">play_arrow</i></a>' + '</div>' +
                 '<div class="collapsible-body">' +
                 '<ul class="collection" id="' + names[i] + '">' +
                 '</ul>' +
@@ -558,6 +558,25 @@ KangoAPI.onReady(function() {
                     kango.dispatchMessage('playsong');
                 }
             }
+        });
+
+        $('body').on('click', '.play-playlist', function() {
+            kango.dispatchMessage('clearplaylist');
+            id = $(this).attr('id').split('-')[1];
+            $('#' + id).children('li').each(function() {
+                id = $(this).attr('id');
+                selector = '#' + id + ' ul';
+                data = [{
+                    name: $(selector + ' .title').text(),
+                    artist: $(selector + ' .subtitle').text(),
+                    image: $(selector + ' img').attr('src'),
+                    source: $('#' + id).attr('class').split(' ')[0],
+                    id: id
+                }, false];
+                console.log(data);
+                kango.dispatchMessage('addsong', data);
+            });
+            kango.dispatchMessage('playplaylist');
         });
 
         $('body').on('click', '.forwards.active', function() {

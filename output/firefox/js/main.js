@@ -1,13 +1,9 @@
-//Damm Soundcloud and their unreliable servers for playlists
-
 KangoAPI.onReady(function() {
 
     typing = false;
     page = '';
     search_timer = '';
     hit_query = '';
-
-    //kango.storage.setItem('playlists', {});
 
     function fini() {
         $('.song-image').attr('src', '');
@@ -380,6 +376,13 @@ KangoAPI.onReady(function() {
     function discover_page() {
         $("#base").load("../pages/discover.html", function() {
             clearInterval(search_timer);
+            /*
+            If Judges are reading this, this was previously using:
+            $.ajax({
+                            url: "http://www.emby.io/gethits"
+                        }).then(function(data) {
+            Internet was short however shortly prior to the event
+            */
             data = kango.storage.getItem('hits');
             for (i = 0; i < data.length; i++) {
                 console.log(data[i]);
@@ -469,7 +472,6 @@ KangoAPI.onReady(function() {
         });
 
         $('body').on('click', '.search-this', function() {
-
             id = $(this).attr('id').split('-')[1];
             if ($(this).hasClass('album-song')) {
                 query = $('#albumsong-' + id)[0].childNodes[0].data;

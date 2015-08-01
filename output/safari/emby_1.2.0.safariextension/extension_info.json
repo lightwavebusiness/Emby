@@ -1,0 +1,29 @@
+{
+    "content_scripts": [
+        "js/front.js"
+    ], 
+    "description": "An intergrated music experience", 
+    "creator": "Kango", 
+    "framework_version": "1.7.9 e39b6ff2fcc8", 
+    "background_scripts": [
+        "js/jquery.js", 
+        "js/audio.js", 
+        "js/soundmanager.js", 
+        "js/back.js"
+    ], 
+    "developer_id": "YOUR_SAFARI_DEVELOPER_ID", 
+    "version": "1.2.0", 
+    "framework_package_id": "dev", 
+    "browser_button": {
+        "caption": "Music Simplified.", 
+        "icon": "images/icon.png", 
+        "popup": {
+            "url": "main.html", 
+            "width": 700, 
+            "height": 500
+        }, 
+        "tooltipText": "Emby"
+    }, 
+    "id": "com.kangoextensions.emby", 
+    "name": "Emby"
+}

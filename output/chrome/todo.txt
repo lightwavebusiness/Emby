@@ -1,0 +1,18 @@
+- Audio Controls
+- Make Playlist Icons Only Appear On Hover
+- Hide Up and Down when they don't work
+- Heart
+- Shuffle
+- Make search work
+- Chrome Search
+- Add a 'More of this catagory' button (+)
+- Show 'x' if it fails to load
+- Show current time in song
+- Song length (move up if this is easy)
+- Custom mp3 songs
+- Get rid of annoying errors
+
+Done:
+- Play Songs
+- Display on exit
+- Reccomendations?

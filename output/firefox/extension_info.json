@@ -1,0 +1,29 @@
+{
+    "content_scripts": [
+        "js/front.js"
+    ], 
+    "description": "An intergrated music experience", 
+    "creator": "Kango", 
+    "framework_version": "1.7.9 e39b6ff2fcc8", 
+    "background_scripts": [
+        "js/jquery.js", 
+        "js/audio.js", 
+        "js/soundmanager.js", 
+        "js/back.js"
+    ], 
+    "package_id": "kango-e3fc20eb-2380-4736-bd91-091dc734e21d", 
+    "version": "1.2.0", 
+    "framework_package_id": "dev", 
+    "browser_button": {
+        "caption": "Music Simplified.", 
+        "icon": "images/icon.png", 
+        "popup": {
+            "url": "main.html", 
+            "width": 700, 
+            "height": 500
+        }, 
+        "tooltipText": "Emby"
+    }, 
+    "id": "{E3FC20EB-2380-4736-BD91-091DC734E21D}", 
+    "name": "Emby"
+}

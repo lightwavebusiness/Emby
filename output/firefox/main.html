@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <script type="text/javascript" src="kango-ui/kango_api.js"></script>
+        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/jquery-ui.js"></script>
+        <script type="text/javascript" src="js/materialize.js"></script>
+        <script type="text/javascript" src="js/md5.js"></script>
+        <script type="text/javascript" src="js/main.js"></script>
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="style/materialize.css">
+        <link rel="stylesheet" type="text/css" href="style/loading.css">
+        <link rel="stylesheet" type="text/css" href="style/main.css">
+    </head>
+
+    <body class="black">
+
+        <ul class="tabs">
+            <li class="col s3 tab"><a id="search">Search</a></li>
+            <li class="col s3 tab"><a id="playlist">Playlist</a></li>
+            <li class="col s3 tab"><a id="discover">Discover</a></li>
+        </ul>
+
+        <div id="player" class="card grey darken-4">
+            <div class="playing-song">
+                <img class="song-image" src="" />
+                <i class="large material-icons control-song circle">pause</i>
+            </div>
+
+            <div class="change-song">
+                <div>
+                    <i class="large material-icons circle backwards">fast_rewind</i>
+                </div>
+                <div>
+                    <p>&nbsp;</p>
+                </div>
+                <div>
+                    <i class="large material-icons circle forwards">fast_forward</i>
+                </div>
+            </div>
+
+            <h5 class="song-title"></h5>
+            <h6 class="song-artist"></h6>
+        </div>
+
+        <div id="base">
+        </div>
+    </body>
+
+</html>

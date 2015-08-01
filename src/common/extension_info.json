@@ -1,0 +1,30 @@
+{
+    "name": "Emby",
+    "version": "1.2.0",
+    "description": "An intergrated music experience",
+    "creator": "Kango",
+    "permissions": {
+        "tabs": true,
+        "content_scripts": ["http://*/*", "https://*/*"],
+        "xhr": ["http://*/*", "https://*/*"]
+    },
+    "content_scripts": [
+        "js/front.js"
+    ],
+    "background_scripts": [
+        "js/jquery.js",
+        "js/audio.js",
+        "js/soundmanager.js",
+        "js/back.js"
+    ],
+    "browser_button": {
+        "tooltipText": "Emby",
+        "caption": "Music Simplified.",
+        "icon": "images/icon.png",
+        "popup": {
+            "url": "main.html",
+            "width": 700,
+            "height": 500
+        }
+    }
+}

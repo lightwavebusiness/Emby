@@ -1,0 +1,1 @@
+watchy -w . -i '\.css|\.map' -- bash -c 'sh /Users/Ajnin/Desktop/Emby/compile.sh'

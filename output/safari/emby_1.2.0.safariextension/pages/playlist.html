@@ -1,0 +1,48 @@
+<ul class="collapsible playlists" style="height: 410px; overflow: auto;" data-collapsible="accordion">
+    <li>
+        <div class="collapsible-header playlist-header">First</div>
+        <div class="collapsible-body">
+            <ul class="collection">
+                <li class="collection-item playlist-song avatar">
+                    <img src="images/yuna.jpg" alt="" class="image">
+                    <span class="title">Title</span>
+                    <span class="subtitle">First Line</span>
+                    <a class="btn-floating waves-effect waves-light action grey add"><i class="material-icons action-text">not_interested</i></a>
+                    <a class="btn-floating waves-effect waves-light action grey down"><i class="material-icons action-text">trending_flat</i></a>
+                    <a class="btn-floating waves-effect waves-light action grey up"><i class="material-icons action-text">trending_flat</i></a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li>
+        <div class="collapsible-header playlist-header">First</div>
+        <div class="collapsible-body">
+            <ul class="collection">
+                <li class="collection-item playlist-song avatar">
+                    <img src="images/yuna.jpg" alt="" class="image">
+                    <span class="title">Title</span>
+                    <span class="subtitle">First Line</span>
+                    <a class="btn-floating waves-effect waves-light action grey add"><i class="material-icons action-text">not_interested</i></a>
+                    <a class="btn-floating waves-effect waves-light action grey down"><i class="material-icons action-text">trending_flat</i></a>
+                    <a class="btn-floating waves-effect waves-light action grey up"><i class="material-icons action-text">trending_flat</i></a>
+                </li>
+            </ul>
+        </div>
+    </li>
+
+</ul>
+
+<div id="add-playlist-modal" class="modal modal-fixed-footer">
+    <div class="modal-content add-modal">
+        <div class="input-field col s6">
+            <input id="playlist-name" type="text" class="validate">
+            <label for="playlist-name" style="color: #878787">Playlist Name</label>
+        </div>
+    </div>
+    <div class="modal-footer add-modal-footer">
+        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat " disabled>Cancel</a>
+        <a href="#!" class="waves-effect waves-green btn-flat add-playlist-confirm" disabled>Confirm</a>
+    </div>
+</div>
+
+<a class="btn-floating btn-large waves-effect waves-light grey center add-playlist add-modal-trigger" data-target="add-playlist-modal"><i class="material-icons">add</i></a>

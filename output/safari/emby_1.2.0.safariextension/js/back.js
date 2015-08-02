@@ -60,6 +60,7 @@ function checkSong(song) {
 }
 
 function startSong(song, callback) {
+    destroy();
     name = song.name;
     artist = song.artist;
     source = song.source;
@@ -81,7 +82,7 @@ function startSong(song, callback) {
             url: url,
             autoLoad: true,
             autoPlay: true,
-            onplay: function() {
+            onload: function() {
                 callback(this.id);
             },
             onerror: function() {
@@ -98,7 +99,6 @@ function startSong(song, callback) {
 function beginSong(song) {
     startSong(song, function(id) {
         console.log("RUNNING CALLBACK");
-        destroy();
         kango.storage.setItem('playing', true);
         kango.dispatchMessage('updateControlButton');
         kango.storage.setItem('currentSong', id);
@@ -121,6 +121,7 @@ function beginSong(song) {
         } else {
             kango.dispatchMessage('renderSong', song);
         }
+
     });
 }
 

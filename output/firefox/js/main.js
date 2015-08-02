@@ -78,7 +78,6 @@ KangoAPI.onReady(function() {
                 drawTrack(names[i]);
             }
         }
-
         $('.playlists').collapsible({
             accordion: false
         });
@@ -343,9 +342,7 @@ KangoAPI.onReady(function() {
                     }
                 }
             });
-
             drawPlaylists();
-
         });
         page = 'playlist';
     }
@@ -488,7 +485,7 @@ KangoAPI.onReady(function() {
             loc = checkSong(playlists[playlist_id].tracks, song_id, true);
             current = playlists[playlist_id].tracks[loc];
             if ($(this).hasClass('up')) {
-                if (loc > 1) {
+                if (loc > 0) {
                     below = playlists[playlist_id].tracks[loc - 1];
                     playlists[playlist_id].tracks[loc] = below;
                     playlists[playlist_id].tracks[loc - 1] = current;

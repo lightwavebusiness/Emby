@@ -44,7 +44,7 @@ def bingImage(query):
 		return None
 
 def songURL(query):
-	params = {"query": query, "token": pleer.get_access_token(), "qualtiy": "good", "result_on_page": 1}
+	params = {"query": query, "token": pleer.get_access_token(), "result_on_page": 1}
 	response = pleer.tracks_search(params=params)
 
 	try:
@@ -52,8 +52,7 @@ def songURL(query):
 		key = response["tracks"][id]["id"]
 		return 'http://pleer.com/browser-extension/files/' + key + '.mp3'
 	except:
-		return str(query), "...", str(response)
-
+		return response
 
 def lastfm_data(catagory, data, autocomplete, tags, image_url = ""):
 	temp_data = {}
